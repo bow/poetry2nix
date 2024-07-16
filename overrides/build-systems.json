@@ -9556,6 +9556,9 @@
   "insights-core": [
     "setuptools"
   ],
+  "insipid-sphinx-theme": [
+    "setuptools"
+  ],
   "instagrapi": [
     "setuptools"
   ],
