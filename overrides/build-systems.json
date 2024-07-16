@@ -19359,6 +19359,9 @@
   "pytest-splinter4": [
     "setuptools"
   ],
+  "pytest-structlog": [
+    "setuptools"
+  ],
   "pytest-subprocess": [
     "setuptools"
   ],
