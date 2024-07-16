@@ -25790,6 +25790,9 @@
   "types-python-jose": [
     "setuptools"
   ],
+  "types-python-slugify": [
+    "setuptools"
+  ],
   "types-pytz": [
     "setuptools"
   ],
