@@ -5864,6 +5864,7 @@
     "setuptools"
   ],
   "docutils": [
+    "flit-core",
     "setuptools"
   ],
   "docx2python": [
