@@ -6636,6 +6636,9 @@
   "ezdxf": [
     "setuptools"
   ],
+  "ezgiphy": [
+    "setuptools"
+  ],
   "ezyrb": [
     "setuptools"
   ],
@@ -8853,6 +8856,9 @@
   ],
   "hijri-converter": [
     "setuptools"
+  ],
+  "hikari-lightbulb": [
+    "flit"
   ],
   "hikvision": [
     "setuptools"
@@ -17832,6 +17838,9 @@
   "pymediaroom": [
     "setuptools"
   ],
+  "pymediawiki": [
+    "setuptools"
+  ],
   "pymeeus": [
     "setuptools"
   ],
@@ -23381,6 +23390,10 @@
     "setuptools",
     "setuptools-scm"
   ],
+  "svcs": [
+    "hatchling",
+    "hatch-fancy-pypi-readme"
+  ],
   "svg-path": [
     "setuptools"
   ],
@@ -25755,6 +25768,9 @@
     "setuptools"
   ],
   "types-pkg-resources": [
+    "setuptools"
+  ],
+  "types-polib": [
     "setuptools"
   ],
   "types-protobuf": [
