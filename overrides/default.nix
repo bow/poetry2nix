@@ -1474,7 +1474,7 @@ lib.composeManyExtensions [
             old.nativeBuildInputs or [ ]
             ++ [ pkg-config libxml2.dev libxslt.dev ]
             ++ lib.optionals stdenv.isDarwin [ xcodebuild ];
-          buildInputs = old.buildInputs or [ ] ++ [ pkgs.libxml2 pkgs.libxslt ];
+          buildInputs = old.buildInputs or [ ] ++ [ pkgs.libxml2 pkgs.libxslt pkgs.zlib ];
         }
       );
 
@@ -1966,6 +1966,7 @@ lib.composeManyExtensions [
         old: lib.optionalAttrs (!(old.src.isWheel or false)) (
           let
             githubHash = {
+              "3.10.7" = "sha256-+ofDblSbaG8CjRXFfF0QFpq2yGmLF/2yILqk2m8PSl8=";
               "3.10.6" = "sha256-K3wCzwaGOsaiCm2LW4Oc4XOnp6agrdTxCxqEIMq0fuU=";
               "3.10.5" = "sha256-Q2zi3mNgCFrg7Ucana0+lmR9C9kkuUidEJj8GneR2W4=";
               "3.10.4" = "sha256-iSTEPgtmT99RSWbrNdWQvw0u/NUsQgNq2cUnNLwvWa4=";
@@ -1973,6 +1974,7 @@ lib.composeManyExtensions [
               "3.9.10" = "sha256-MkcuayNDt7/GcswXoFTvzuaZzhQEQV+V7OfKqgJwVIQ=";
               "3.9.7" = "sha256-VkCwvksUtgvFLSMy2fHLxrpZjcWYhincSM4fX/Gwl0I=";
               "3.9.5" = "sha256-OFtaHZa7wUrUxhM8DkaqAP3dYZJdFGrz1jOtCIGsbbY=";
+              "3.9.1" = "sha256-4aMVYwsLYjA8yoKiauMHBEi2cMN6MQla4sK92gLfx3k=";
               "3.9.0" = "sha256-nLRluFt6dErLJUJ4W64G9o8qLTL1IKNKVtNqpN9YUNU=";
               "3.8.14" = "sha256-/1NcXGYOjCIVsFee7qgmCjnYPJnDEtyHMKJ5sBamhWE=";
               "3.8.13" = "sha256-pIxhev7Ap6r0UVYeOra/YAtbjTjn72JodhdCZIbA6lU=";
@@ -2404,6 +2406,10 @@ lib.composeManyExtensions [
           '';
         }
       );
+
+      pyinstaller = prev.pyinstaller.overridePythonAttrs (old: {
+        buildInputs = old.buildInputs or [ ] ++ [ pkgs.zlib ];
+      });
 
       pymdown-extensions = prev.pymdown-extensions.overridePythonAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs or [ ] ++ [ final.pyyaml ];
@@ -3137,6 +3143,8 @@ lib.composeManyExtensions [
             "0.18.0" = "sha256-wd1teRDhjQWlKjFIahURj0iwcfkpyUvqIWXXscW7eek=";
             "0.18.1" = "sha256-caNEmU3K5COYa/UImE4BZYaFTc3Csi3WmnBSbFN3Yn8=";
             "0.19.0" = "sha256-H9IAg4lh7cmGaML5PuyYoe026pBNhOyvb/cf+oZcv0c=";
+            "0.19.1" = "sha256-qIXdoCEVGCGUnTicZp4bUTJyGpFy9dwWY03lXUbxiHg=";
+            "0.20.0" = "sha256-5vbR2EbrAPJ8pb78tj/+r9nOWgQDT5aO/LUQI4kAGjU=";
           }.${version} or (
             lib.warn "Unknown rpds-py version: '${version}'. Please update getCargoHash." lib.fakeHash
           );
@@ -3182,6 +3190,8 @@ lib.composeManyExtensions [
           #       echo "\"${version#v}\" = \"$(echo "$nix_prefetch" | jq -r ".sha256 // .hash")\";"
           #     done' _
           getRepoHash = version: {
+            "0.5.7" = "sha256-swnh2bfmwPP1BHlnKbOtRdskMMArZgP/ErtrnXKRiC8=";
+            "0.5.6" = "sha256-70EEdr6gjdE8kjgMXYzHpqCzt4E73/Gr7ksNEbLlBoA=";
             "0.5.5" = "sha256-dqfK6YdAV4cdUYB8bPE9I5FduBJ90RxUA7TMvcVq6Zw=";
             "0.5.4" = "sha256-dvvhd84T2YaNR5yu1uYcqwHjVzcWXvlXthyMBf8qZzE=";
             "0.5.3" = "sha256-+tlE5izXD+kNVwF0nucRsLALYQnkAnCZEONPVDG6dwk=";
@@ -3254,6 +3264,22 @@ lib.composeManyExtensions [
           );
 
           getCargoHash = version: {
+            "0.5.7" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.6/Cargo.lock
+              lockFile = ./ruff/0.5.7-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-Gu7YVqEDJUSzBqTeZH1xU0b3CWsWZrEvjIg7QpUaKBw=";
+              };
+            };
+            "0.5.6" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.6/Cargo.lock
+              lockFile = ./ruff/0.5.6-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-y5PuGeQNUHLhU8YY9wPbGk71eNZ0aM0Xpvwfyf+UZwM=";
+              };
+            };
             "0.5.1" = {
               # https://raw.githubusercontent.com/astral-sh/ruff/0.5.1/Cargo.lock
               lockFile = ./ruff/0.5.1-Cargo.lock;
@@ -3749,6 +3775,7 @@ lib.composeManyExtensions [
         let
           # Watchfiles does not include Cargo.lock in tarball released on PyPi for versions up to 0.17.0
           getRepoHash = version: {
+            "0.23.0" = "sha256-kFScg3pkOD0gASRtfXSfwZxyW/XvW9x0zgMn0AQek4A=";
             "0.22.0" = "sha256-TtRSRgtMOqsnhdvsic3lg33xlA+r/DcYHlzewSOu/44=";
             "0.21.0" = "sha256-/qNgkPF5N8jzSV3M0YFWvQngZ4Hf4WM/GBS1LtgFbWM=";
             "0.20.0" = "sha256-eoKF6uBHgML63DrDlC1zPfDu/mAMoaevttwqHLCKh+M=";
@@ -3768,6 +3795,7 @@ lib.composeManyExtensions [
           sha256 = getRepoHash prev.watchfiles.version;
 
           getCargoHash = version: {
+            "0.23.0" = "sha256-m7XFpbujWFmDNSDydY3ec6b+AGgrfo3+TTbRN7te8bY=";
             "0.22.0" = "sha256-pl5BBOxrxvPvBJTnTqvWNFecoJwfyuAs4xZEgmg+T+w=";
             "0.21.0" = "sha256-KDm1nGeg4oDcbopedPfzalK2XO1c1ZQUZu6xhfRdQx4=";
             "0.20.0" = "sha256-ChUs7YJE1ZEIONhUUbVAW/yDYqqUR/k/k10Ce7jw8Xo=";

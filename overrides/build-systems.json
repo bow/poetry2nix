@@ -941,6 +941,9 @@
   "ansible-core": [
     "setuptools"
   ],
+  "ansible-creator": [
+    "setuptools"
+  ],
   "ansible-doctor": [
     "poetry-core",
     "setuptools"
@@ -970,6 +973,9 @@
   ],
   "ansible-runner": [
     "pbr",
+    "setuptools"
+  ],
+  "ansible-sign": [
     "setuptools"
   ],
   "ansible-vault-rw": [
@@ -2973,6 +2979,9 @@
     "setuptools"
   ],
   "brunt": [
+    "setuptools"
+  ],
+  "bs4": [
     "setuptools"
   ],
   "bsblan": [
@@ -5864,6 +5873,7 @@
     "setuptools"
   ],
   "docutils": [
+    "flit-core",
     "setuptools"
   ],
   "docx2python": [
@@ -8536,6 +8546,9 @@
   "grpc-interceptor": [
     "poetry-core"
   ],
+  "grpc-requests": [
+    "setuptools"
+  ],
   "grpcio": [
     "cython",
     "setuptools"
@@ -9224,7 +9237,14 @@
     "setuptools"
   ],
   "hypothesis-graphql": [
-    "poetry"
+    {
+      "buildSystem": "poetry",
+      "until": "0.10.0"
+    },
+    {
+      "buildSystem": "hatchling",
+      "from": "0.10.0"
+    }
   ],
   "hypothesis-jsonschema": [
     "setuptools"
@@ -17881,6 +17901,9 @@
   "pymilvus": [
     "setuptools-scm"
   ],
+  "pymisp": [
+    "poetry"
+  ],
   "pymitv": [
     "setuptools"
   ],
@@ -17902,6 +17925,9 @@
   ],
   "pymorphy2-dicts-ru": [
     "setuptools"
+  ],
+  "pymp4": [
+    "poetry-core"
   ],
   "pympler": [
     "setuptools"
@@ -20380,6 +20406,9 @@
     "cython",
     "setuptools"
   ],
+  "pywidevine": [
+    "poetry-core"
+  ],
   "pywilight": [
     "setuptools"
   ],
@@ -21002,6 +21031,9 @@
     "setuptools"
   ],
   "requests-hawk": [
+    "setuptools"
+  ],
+  "requests-html": [
     "setuptools"
   ],
   "requests-http-signature": [
@@ -22914,7 +22946,13 @@
   "spinners": [
     "setuptools"
   ],
+  "splink": [
+    "poetry-core"
+  ],
   "splinter": [
+    "setuptools"
+  ],
+  "splunk-sdk": [
     "setuptools"
   ],
   "spotipy": [
@@ -25738,6 +25776,9 @@
   "types-enum34": [
     "setuptools"
   ],
+  "types-flask": [
+    "setuptools"
+  ],
   "types-freezegun": [
     "setuptools"
   ],
@@ -25753,6 +25794,9 @@
   "types-ipaddress": [
     "setuptools"
   ],
+  "types-jinja2": [
+    "setuptools"
+  ],
   "types-jsonschema": [
     "setuptools"
   ],
@@ -25761,6 +25805,9 @@
     "setuptools-scm"
   ],
   "types-markdown": [
+    "setuptools"
+  ],
+  "types-markupsafe": [
     "setuptools"
   ],
   "types-mock": [
@@ -25776,6 +25823,9 @@
     "setuptools"
   ],
   "types-passlib": [
+    "setuptools"
+  ],
+  "types-peewee": [
     "setuptools"
   ],
   "types-pillow": [
@@ -25841,6 +25891,9 @@
   "types-termcolor": [
     "setuptools"
   ],
+  "types-tgcrypto": [
+    "setuptools"
+  ],
   "types-toml": [
     "setuptools"
   ],
@@ -25856,7 +25909,13 @@
   "types-urllib3": [
     "setuptools"
   ],
+  "types-werkzeug": [
+    "setuptools"
+  ],
   "types-xmltodict": [
+    "setuptools"
+  ],
+  "typesense": [
     "setuptools"
   ],
   "typesentry": [
@@ -26213,6 +26272,9 @@
     "setuptools"
   ],
   "usbtmc": [
+    "setuptools"
+  ],
+  "user-agent": [
     "setuptools"
   ],
   "user-agents": [
