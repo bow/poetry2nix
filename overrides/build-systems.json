@@ -1052,6 +1052,9 @@
     "cython_0",
     "setuptools"
   ],
+  "apache-flink": [
+    "setuptools"
+  ],
   "apache-flink-libraries": [
     "setuptools"
   ],
@@ -1462,6 +1465,9 @@
   ],
   "asyncpg": [
     "setuptools"
+  ],
+  "asyncpg-stubs": [
+    "poetry-core"
   ],
   "asyncsleepiq": [
     "setuptools"
@@ -5866,6 +5872,7 @@
     "setuptools"
   ],
   "docopt-ng": [
+    "pdm-backend",
     "setuptools"
   ],
   "docplex": [
@@ -6908,6 +6915,9 @@
     "setuptools"
   ],
   "ffmpeg-python": [
+    "setuptools"
+  ],
+  "ffmpegcv": [
     "setuptools"
   ],
   "ffmpy": [
@@ -11044,6 +11054,9 @@
   "litellm": [
     "poetry-core"
   ],
+  "litestar": [
+    "hatchling"
+  ],
   "littleutils": [
     "setuptools"
   ],
@@ -11830,6 +11843,10 @@
   "meson": [
     "setuptools"
   ],
+  "meson-python": [
+    "meson",
+    "ninja"
+  ],
   "mesonpep517": [
     "setuptools"
   ],
@@ -12424,7 +12441,14 @@
     "setuptools"
   ],
   "mss": [
-    "setuptools"
+    {
+      "buildSystem": "setuptools",
+      "until": "9.0.2"
+    },
+    {
+      "buildSystem": "hatchling",
+      "from": "9.0.2"
+    }
   ],
   "mt-940": [
     "setuptools"
@@ -15457,6 +15481,9 @@
     "hatchling",
     "setuptools"
   ],
+  "pemja": [
+    "setuptools"
+  ],
   "pencompy": [
     "setuptools"
   ],
@@ -15940,7 +15967,14 @@
     "setuptools"
   ],
   "polyfactory": [
-    "poetry-core"
+    {
+      "buildSystem": "poetry-core",
+      "until": "2.10.0"
+    },
+    {
+      "buildSystem": "hatchling",
+      "from": "2.10.0"
+    }
   ],
   "polyline": [
     "setuptools"
@@ -16294,6 +16328,9 @@
     "setuptools"
   ],
   "psycopg": [
+    "setuptools"
+  ],
+  "psycopg-c": [
     "setuptools"
   ],
   "psycopg-pool": [
@@ -16796,7 +16833,18 @@
     "setuptools"
   ],
   "pycairo": [
-    "setuptools"
+    {
+      "buildSystem": "setuptools",
+      "until": "1.27.0"
+    },
+    {
+      "buildSystem": "meson-python",
+      "from": "1.27.0"
+    },
+    {
+      "buildSystem": "ninja",
+      "from": "1.27.0"
+    }
   ],
   "pycangjie": [
     "cython",
@@ -17742,6 +17790,9 @@
   "pylightning": [
     "setuptools"
   ],
+  "pylightxl": [
+    "setuptools"
+  ],
   "pylink-square": [
     "setuptools"
   ],
@@ -18332,7 +18383,14 @@
     "flit-core"
   ],
   "pyproject-metadata": [
-    "setuptools"
+    {
+      "buildSystem": "setuptools",
+      "until": "0.8.0"
+    },
+    {
+      "buildSystem": "flit-core",
+      "from": "0.8.0"
+    }
   ],
   "pyprosegur": [
     "setuptools"
@@ -21724,6 +21782,9 @@
     "setuptools",
     "setuptools-scm"
   ],
+  "scienceplots": [
+    "setuptools"
+  ],
   "scikit-bio": [
     "cython",
     "setuptools"
@@ -23974,6 +24035,9 @@
     "poetry-core",
     "setuptools"
   ],
+  "textual-serve": [
+    "hatchling"
+  ],
   "textual-textarea": [
     "poetry-core",
     "setuptools"
@@ -25775,7 +25839,14 @@
     "setuptools"
   ],
   "types-awscrt": [
-    "poetry-core"
+    {
+      "buildSystem": "poetry-core",
+      "until": "0.21.4"
+    },
+    {
+      "buildSystem": "setuptools",
+      "from": "0.21.4"
+    }
   ],
   "types-backports": [
     "setuptools"
@@ -25784,6 +25855,9 @@
     "setuptools"
   ],
   "types-cachetools": [
+    "setuptools"
+  ],
+  "types-cffi": [
     "setuptools"
   ],
   "types-click": [
@@ -25917,7 +25991,14 @@
     "setuptools"
   ],
   "types-s3transfer": [
-    "poetry-core"
+    {
+      "buildSystem": "poetry-core",
+      "until": "0.10.2"
+    },
+    {
+      "buildSystem": "setuptools",
+      "from": "0.10.2"
+    }
   ],
   "types-setuptools": [
     "setuptools"
@@ -26281,6 +26362,10 @@
     {
       "buildSystem": "hatchling",
       "from": "2.0.2"
+    },
+    {
+      "buildSystem": "hatch-vcs",
+      "from": "2.2.3"
     }
   ],
   "urlman": [
@@ -26335,6 +26420,12 @@
     "setuptools"
   ],
   "uuid": [
+    "setuptools"
+  ],
+  "uuid6": [
+    "setuptools"
+  ],
+  "uuid7": [
     "setuptools"
   ],
   "uvcclient": [

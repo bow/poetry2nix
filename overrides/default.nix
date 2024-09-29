@@ -1650,7 +1650,7 @@ lib.composeManyExtensions [
 
       msgspec = prev.msgspec.overridePythonAttrs (old: {
         # crash during integer serialization - see https://github.com/jcrist/msgspec/issues/730
-        hardeningDisable = old.hardeningDisable or [] ++ [ "fortify" ];
+        hardeningDisable = old.hardeningDisable or [ ] ++ [ "fortify" ];
       });
 
       munch = prev.munch.overridePythonAttrs (
@@ -1670,7 +1670,7 @@ lib.composeManyExtensions [
               { }
               {
                 mpi = {
-                  mpicc = "${pkgs.mpi.dev}/bin/mpicc";
+                  mpicc = "${lib.getDev pkgs.mpi}/bin/mpicc";
                 };
               };
           };
@@ -1863,6 +1863,8 @@ lib.composeManyExtensions [
         ];
         buildInputs = old.buildInputs or [ ] ++ [
           pkgs.libusb1
+          pkgs.xorg.libXfixes
+          pkgs.xorg.libXxf86vm
         ] ++ lib.optionals stdenv.isLinux [
           pkgs.udev
         ] ++ lib.optionals (lib.versionAtLeast prev.open3d.version "0.16.0" && !pkgs.mesa.meta.broken) [
@@ -2125,26 +2127,22 @@ lib.composeManyExtensions [
       );
 
       pendulum = prev.pendulum.overridePythonAttrs (
-        old: (
-          # NOTE: Versions <3.0.0 is pure Python and is not PEP-517 compliant,
-          #       which means they can not be built using recent Poetry versions.
-          if lib.versionOlder old.version "3"
-          then { }
-          else
-            lib.optionalAttrs (!old.src.isWheel or false) {
-              cargoRoot = "rust";
-              cargoDeps = pkgs.rustPlatform.importCargoLock {
-                lockFile = ./pendulum/3.0.0-Cargo.lock;
-              };
-              nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [
-                pkgs.rustPlatform.cargoSetupHook
-                pkgs.rustPlatform.maturinBuildHook
-              ];
-              buildInputs = old.buildInputs or [ ] ++ lib.optionals pkgs.stdenv.isDarwin [
-                pkgs.libiconv
-              ];
-            }
-        )
+        old:
+        # NOTE: Versions <3.0.0 is pure Python and is not PEP-517 compliant,
+        #       which means they can not be built using recent Poetry versions.
+        lib.optionalAttrs (lib.versionAtLeast old.version "3" && (!old.src.isWheel or false)) {
+          cargoRoot = "rust";
+          cargoDeps = pkgs.rustPlatform.importCargoLock {
+            lockFile = ./pendulum/3.0.0-Cargo.lock;
+          };
+          nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [
+            pkgs.rustPlatform.cargoSetupHook
+            pkgs.rustPlatform.maturinBuildHook
+          ];
+          buildInputs = old.buildInputs or [ ] ++ lib.optionals pkgs.stdenv.isDarwin [
+            pkgs.libiconv
+          ];
+        }
       );
 
       pikepdf = prev.pikepdf.overridePythonAttrs (
@@ -2244,6 +2242,12 @@ lib.composeManyExtensions [
         CMDSTAN = "${pkgs.cmdstan}";
       });
 
+      psycopg-c = prev.psycopg-c.overridePythonAttrs (
+        old: {
+          nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [ pkgs.postgresql ];
+        }
+      );
+
       psycopg2 = prev.psycopg2.overridePythonAttrs (
         old: {
           buildInputs = old.buildInputs or [ ]
@@ -2267,6 +2271,33 @@ lib.composeManyExtensions [
           nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [ pkgs.postgresql ];
         }
       );
+
+      pemja = prev.pemja.overridePythonAttrs (old: {
+        buildInputs = old.buildInputs or [ ] ++ [ pkgs.openjdk17_headless ];
+      });
+
+      pycrdt =
+        let
+          hashes = {
+            "0.9.11" = "sha256-qKrYCkSP8f/oQytfc1xvBX6gt26D3Z/5bbzKPO0e0tQ=";
+          };
+        in
+        prev.pycrdt.overridePythonAttrs (old: {
+          cargoDeps = pkgs.rustPlatform.fetchCargoTarball {
+            inherit (old) src;
+            name = "${old.pname}-${old.version}";
+            sha256 = hashes.${old.version};
+          };
+
+          buildInputs = old.buildInputs or [ ] ++ lib.optionals stdenv.isDarwin [
+            pkgs.libiconv
+          ];
+
+          nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [
+            pkgs.rustPlatform.cargoSetupHook
+            pkgs.rustPlatform.maturinBuildHook
+          ];
+        });
 
       pycurl = prev.pycurl.overridePythonAttrs (
         old: {
@@ -2301,8 +2332,8 @@ lib.composeManyExtensions [
               );
 
               ARROW_HOME = _arrow-cpp;
-              arrowCppVersion = lib.versions.majorMinor _arrow-cpp;
-              pyArrowVersion = lib.versions.majorMinor prev.pyarrow;
+              arrowCppVersion = lib.versions.majorMinor _arrow-cpp.version;
+              pyArrowVersion = lib.versions.majorMinor prev.pyarrow.version;
               errorMessage = "arrow-cpp version (${arrowCppVersion}) mismatches pyarrow version (${pyArrowVersion})";
             in
             lib.throwIf (arrowCppVersion != pyArrowVersion) errorMessage {
@@ -2797,15 +2828,12 @@ lib.composeManyExtensions [
       });
 
       pyside6-essentials = prev.pyside6-essentials.overridePythonAttrs (old: lib.optionalAttrs stdenv.isLinux {
-        autoPatchelfIgnoreMissingDeps = [ "libmysqlclient.so.21" "libmimerapi.so" "libQt6*" ];
+        autoPatchelfIgnoreMissingDeps = [ "libmysqlclient.so.21" "libmimerapi.so" "libQt6EglFsKmsGbmSupport.so*" ];
         preFixup = ''
-          addAutoPatchelfSearchPath $out/${final.python.sitePackages}/PySide6
           addAutoPatchelfSearchPath ${final.shiboken6}/${final.python.sitePackages}/shiboken6
         '';
-        postInstall = ''
-          rm -r $out/${final.python.sitePackages}/PySide6/__pycache__
-        '';
         propagatedBuildInputs = old.propagatedBuildInputs or [ ] ++ [
+          pkgs.qt6.full
           pkgs.libxkbcommon
           pkgs.gtk3
           pkgs.speechd
@@ -2825,30 +2853,47 @@ lib.composeManyExtensions [
           pkgs.xorg.xcbutilwm
           pkgs.libdrm
           pkgs.pulseaudio
-          final.shiboken6
         ];
+        pythonImportsCheck = [
+          "PySide6"
+          "PySide6.QtCore"
+        ];
+        postInstall = ''
+          python -c 'import PySide6; print(PySide6.__all__)'
+        '';
       });
 
-      pyside6-addons = prev.pyside6-addons.overridePythonAttrs (old: lib.optionalAttrs stdenv.isLinux {
+      pyside6-addons = prev.pyside6-addons.overridePythonAttrs (_old: lib.optionalAttrs stdenv.isLinux {
         autoPatchelfIgnoreMissingDeps = [
           "libmysqlclient.so.21"
           "libmimerapi.so"
-          "libQt6Quick3DSpatialAudio.so.6"
-          "libQt6Quick3DHelpersImpl.so.6"
         ];
         preFixup = ''
           addAutoPatchelfSearchPath ${final.shiboken6}/${final.python.sitePackages}/shiboken6
           addAutoPatchelfSearchPath ${final.pyside6-essentials}/${final.python.sitePackages}/PySide6
+          addAutoPatchelfSearchPath $out/${final.python.sitePackages}/PySide6
         '';
-        propagatedBuildInputs = old.propagatedBuildInputs or [ ] ++ [
+        buildInputs = [
           pkgs.nss
           pkgs.xorg.libXtst
           pkgs.alsa-lib
           pkgs.xorg.libxshmfence
           pkgs.xorg.libxkbfile
         ];
-        postInstall = ''
-          rm -r $out/${final.python.sitePackages}/PySide6/__pycache__
+      });
+      pyside6 = prev.pyside6.overridePythonAttrs (_old: {
+        # The PySide6/__init__.py script tries to find the Qt libraries
+        # relative to its own path in the installed site-packages directory.
+        # This then fails to find the paths from pyside6-essentials and
+        # pyside6-addons because they are installed into different directories.
+        #
+        # To work around this issue we symlink all of the files resulting from
+        # those packages into the aggregated `pyside6` output directories.
+        #
+        # See https://github.com/nix-community/poetry2nix/issues/1791 for more details.
+        postFixup = ''
+          ${pkgs.xorg.lndir}/bin/lndir ${final.pyside6-essentials}/${final.python.sitePackages}/PySide6 $out/${final.python.sitePackages}/PySide6
+          ${pkgs.xorg.lndir}/bin/lndir ${final.pyside6-addons}/${final.python.sitePackages}/PySide6 $out/${final.python.sitePackages}/PySide6
         '';
       });
 
@@ -2907,7 +2952,18 @@ lib.composeManyExtensions [
         }
       );
 
-      pytest-runner = prev.pytest-runner or prev.pytestrunner;
+      pytest-runner = final.buildPythonPackage rec {
+        pname = "pytest-runner";
+        version = "6.0.1";
+        pyproject = true;
+
+        src = final.pkgs.fetchPypi {
+          inherit pname version;
+          hash = "sha256-cNRzlYWnAI83v0kzwBP9sye4h4paafy7MxbIiILw9Js=";
+        };
+
+        build-system = [ final.setuptools final.setuptools-scm ];
+      };
 
       pytest-pylint = prev.pytest-pylint.overridePythonAttrs (
         _old: {
@@ -3324,6 +3380,38 @@ lib.composeManyExtensions [
             };
             "0.5.6" = {
               # https://raw.githubusercontent.com/astral-sh/ruff/0.5.6/Cargo.lock
+              lockFile = ./ruff/0.5.6-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-y5PuGeQNUHLhU8YY9wPbGk71eNZ0aM0Xpvwfyf+UZwM=";
+              };
+            };
+            "0.5.5" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.5/Cargo.lock
+              lockFile = ./ruff/0.5.5-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-y5PuGeQNUHLhU8YY9wPbGk71eNZ0aM0Xpvwfyf+UZwM=";
+              };
+            };
+            "0.5.4" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.4/Cargo.lock
+              lockFile = ./ruff/0.5.4-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-y5PuGeQNUHLhU8YY9wPbGk71eNZ0aM0Xpvwfyf+UZwM=";
+              };
+            };
+            "0.5.3" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.3/Cargo.lock
+              lockFile = ./ruff/0.5.3-Cargo.lock;
+              outputHashes = {
+                "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
+                "salsa-0.18.0" = "sha256-y5PuGeQNUHLhU8YY9wPbGk71eNZ0aM0Xpvwfyf+UZwM=";
+              };
+            };
+            "0.5.2" = {
+              # https://raw.githubusercontent.com/astral-sh/ruff/0.5.2/Cargo.lock
               lockFile = ./ruff/0.5.6-Cargo.lock;
               outputHashes = {
                 "lsp-types-0.95.1" = "sha256-8Oh299exWXVi6A39pALOISNfp8XBya8z+KT/Z7suRxQ=";
@@ -3825,6 +3913,7 @@ lib.composeManyExtensions [
         let
           # Watchfiles does not include Cargo.lock in tarball released on PyPi for versions up to 0.17.0
           getRepoHash = version: {
+            "0.24.0" = "sha256-uc4CfczpNkS4NMevtRxhUOj9zTt59cxoC0BXnuHFzys=";
             "0.23.0" = "sha256-kFScg3pkOD0gASRtfXSfwZxyW/XvW9x0zgMn0AQek4A=";
             "0.22.0" = "sha256-TtRSRgtMOqsnhdvsic3lg33xlA+r/DcYHlzewSOu/44=";
             "0.21.0" = "sha256-/qNgkPF5N8jzSV3M0YFWvQngZ4Hf4WM/GBS1LtgFbWM=";
@@ -3845,6 +3934,9 @@ lib.composeManyExtensions [
           sha256 = getRepoHash prev.watchfiles.version;
 
           getCargoHash = version: {
+            "0.24.0".outputHashes = {
+              "notify-6.1.1" = "sha256-lT3R5ZQpjx52NVMEKTTQI90EWT16YnbqphqvZmNpw/I=";
+            };
             "0.23.0" = "sha256-m7XFpbujWFmDNSDydY3ec6b+AGgrfo3+TTbRN7te8bY=";
             "0.22.0" = "sha256-pl5BBOxrxvPvBJTnTqvWNFecoJwfyuAs4xZEgmg+T+w=";
             "0.21.0" = "sha256-KDm1nGeg4oDcbopedPfzalK2XO1c1ZQUZu6xhfRdQx4=";
@@ -3863,11 +3955,11 @@ lib.composeManyExtensions [
             };
 
             cargoDeps = let hash = getCargoHash prev.watchfiles.version; in
-              if hash == null then
+              if hash == null || lib.isAttrs hash then
                 pkgs.rustPlatform.importCargoLock
-                  {
+                  ({
                     lockFile = "${src.out}/Cargo.lock";
-                  } else
+                  } // (lib.optionalAttrs (lib.isAttrs hash) hash)) else
                 pkgs.rustPlatform.fetchCargoTarball {
                   name = "watchfiles-${old.version}-cargo-deps";
                   inherit src hash;
