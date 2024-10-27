@@ -686,6 +686,19 @@ lib.composeManyExtensions [
         preferWheel = true;
       };
 
+      dask = prev.dask.overridePythonAttrs (
+        old: {
+          propagatedBuildInputs = removePackagesByName
+            old.propagatedBuildInputs or [ ]
+            (
+              # dask[dataframe] depends on dask-expr, which depends on dask, resulting in infinite recursion
+              lib.optionals (final ? dask-expr) [ final.dask-expr ] ++
+              # dask[dataframe] depends on distributed, which depends on dask, resulting in infinite recursion
+              lib.optionals (final ? distributed) [ final.distributed ]
+            );
+        }
+      );
+
       datadog-lambda = prev.datadog-lambda.overridePythonAttrs (old: {
         postPatch = ''
           substituteInPlace setup.py --replace-warn "setuptools==" "setuptools>="
@@ -1401,6 +1414,10 @@ lib.composeManyExtensions [
           '';
         }
       );
+
+      license-expression = prev.license-expression.overridePythonAttrs (_old: {
+        dontConfigure = true;
+      });
 
       llama-cpp-python = prev.llama-cpp-python.overridePythonAttrs (
         old: {
@@ -2234,6 +2251,11 @@ lib.composeManyExtensions [
 
       prettytable = prev.prettytable.overridePythonAttrs (old: {
         propagatedBuildInputs = old.propagatedBuildInputs or [ ] ++ [ final.setuptools ];
+      });
+
+      propcache = prev.propcache.overridePythonAttrs (old: {
+        nativeBuildInputs = old.nativeBuildInputs or [ ]
+          ++ lib.optionals (final.pythonOlder "3.11") [ final.tomli ];
       });
 
       prophet = prev.prophet.overridePythonAttrs (old: {
@@ -4126,6 +4148,8 @@ lib.composeManyExtensions [
             setuptools
             numpy
             six
+            attrdict
+            sip
           ]);
         in
         {
